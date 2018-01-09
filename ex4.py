@@ -1,10 +1,11 @@
-import wikipedia, spacy
+import wikipedia
+import spacy
+
 # from spacy.token import Doc
 
 nlp_model = spacy.load('en')
 page = wikipedia.page('Brad Pitt').content
 analyzed_page = nlp_model(page)
-
 
 
 def extractor_by_pos():
