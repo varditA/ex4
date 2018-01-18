@@ -1,6 +1,6 @@
 import wikipedia
 import spacy
-
+import random
 # from spacy.token import Doc
 
 nlp_model = spacy.load('en')
@@ -50,7 +50,7 @@ def pairs_for_sents(proper_nouns, doc):
 def extractor_by_pos(document):
     doc = nlp_model(document)
     sents = list(doc.sents)
-    relations_dict = {}
+    relations_list = []
 
     for i, sent in enumerate(sents):
         # PART A
@@ -67,9 +67,10 @@ def extractor_by_pos(document):
         if len(triplet) < 1:
             continue
 
-        relations_dict[i] = triplet
+        for relation in triplet:
+            relations_list.append(relation)
 
-    return relations_dict
+    return relations_list
 
 
 # ----------------------------- Part B ---------------------------------------
@@ -78,7 +79,7 @@ def proper_nouns_for_sent_by_tree(sent):
     proper_nouns = []
     tokens = list(sent)
     for token in tokens:
-        print(token, token.pos_)
+        # print(token, token.pos_, token.dep_)
         if token.pos_ == 'PROPN' and token.dep_ != 'compound':
             token_list = [token]
             for child in token.children:
@@ -89,45 +90,97 @@ def proper_nouns_for_sent_by_tree(sent):
     return proper_nouns
 
 
+def condition1(noun1, noun2):
+    head1 = noun1[0]
+    head2 = noun2[0]
+    if head1.head != head2.head:
+        return None
+    if head1.dep_ == 'nsubj' and head2.dep_ == 'dobj':
+        return noun1, head1.head, noun2
+    return None
+
+
+def condition2(noun1, noun2):
+    head1 = noun1[0]
+    head2 = noun2[0]
+    if head1.head != head2.head.head:
+        return None
+    if head1.dep_ == 'nsubj' and head2.dep_ == 'pobj' and head2.head.dep_ == 'prep':
+        return noun1, head2.head.text + head2.head.head.text, noun2
+    return None
+
+
+def define_relations(proper_nouns):
+    triplet = []
+    for noun1 in proper_nouns:
+        for noun2 in proper_nouns:
+            relation = condition1(noun1, noun2)
+            if relation:
+                triplet.append(relation)
+            else:
+                relation = condition2(noun1, noun2)
+                if relation:
+                    triplet.append(relation)
+
+    return triplet
+
+
 def extractor_by_dependency_tree(document):
     doc = nlp_model(document)
     sents = list(doc.sents)
-    relations_dict = {}
+    relations_list = []
 
     for i, sent in enumerate(sents):
-        print(sent, "===================")
-        # PART A
+        # print(sent)
         proper_nouns = proper_nouns_for_sent_by_tree(sent)
-        proper_nouns2 = proper_nouns_for_sent_by_pos(sent)
-        print(proper_nouns, proper_nouns2)
+        # print(proper_nouns)
+
         # Need at least 2 proper nouns to create pairs
         if len(proper_nouns) <= 1:
             continue
 
-            # PART B
-            # triplet = pairs_for_sents(proper_nouns, doc)
+        triplet = define_relations(proper_nouns)
+        # print(triplet)
+        # Need at least 1 pair to create relations
+        if len(triplet) < 1:
+            continue
 
-            # Need at least 1 pair to create relations
-            # if len(triplet) < 1:
-            #     continue
+        for relation in triplet:
+            relations_list.append(relation)
 
-            # relations_dict[i] = triplet
+    return relations_list
 
-    return relations_dict
 
 # ----------------------------- Part C ---------------------------------------
 
 
 def evaluation():
-    pass
+    page_pitt = wikipedia.page('Brad Pitt').content
+    page_trump = wikipedia.page('Donald Trump').content
+    page_jolie = wikipedia.page('Angelina Jolie').content
+
+    pages = [page_pitt, page_trump, page_jolie]
+
+    # evaluation for pos
+    for page in pages:
+        pos_list = extractor_by_pos(document=page)
+        print(random.choice(pos_list, 30))
+        # for num in
+
+
+    # evaluation for tree
+
+
+    # dict_by_tree = extractor_by_dependency_tree(document=page)
+
+        pass
 
 
 def main():
-    page = wikipedia.page('Brad Pitt').content
-    dict_by_pos = extractor_by_pos(document=page)
-    print(dict_by_pos)
+    evaluation()
 
-    dict_by_tree = extractor_by_dependency_tree(document=page)
+    # dict_by_tree = extractor_by_dependency_tree(document=page)
+    # print(dict_by_tree)
     # evaluation()
 
 
