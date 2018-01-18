@@ -14,6 +14,7 @@ def proper_nouns_for_sent(sent):
     for noun in nouns:
         to_add = True
         for token in noun:
+            print (token)
             if token.pos_ != 'PROPN':
                 to_add = False
                 break
