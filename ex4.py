@@ -106,7 +106,7 @@ def condition2(noun1, noun2):
     if head1.head != head2.head.head:
         return None
     if head1.dep_ == 'nsubj' and head2.dep_ == 'pobj' and head2.head.dep_ == 'prep':
-        return noun1, head2.head.text + head2.head.head.text, noun2
+        return noun1, head2.head.text + " " + head2.head.head.text, noun2
     return None
 
 
@@ -164,16 +164,16 @@ def evaluation():
     # evaluation for pos
     for page in pages:
         pos_list = extractor_by_pos(document=page)
-        print(random.choice(pos_list, 30))
-        # for num in
-
+        random.shuffle(pos_list)
+        # print(pos_list[:30])
+        print(len(pos_list))
 
     # evaluation for tree
-
-
-    # dict_by_tree = extractor_by_dependency_tree(document=page)
-
-        pass
+    for page in pages:
+        tree_list = extractor_by_dependency_tree(document=page)
+        random.shuffle(tree_list)
+        print(len(tree_list))
+        # print(tree_list[:30])
 
 
 def main():
