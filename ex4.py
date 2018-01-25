@@ -47,6 +47,35 @@ def pairs_for_sents(proper_nouns, doc):
     return triplet
 
 
+# def pairs_for_sents(proper_nouns, doc):
+    # triplet = []
+    # for i in range(len(proper_nouns) - 1):
+    #     noun1 = proper_nouns[i]
+    #     noun2 = proper_nouns[i+1]
+    #
+    #     ind1 = noun1[-1].i
+    #     ind2 = noun2[0].i
+    #
+    #     found_verb = False
+    #     found_punct = False
+    #
+    #     relations = list()
+    #
+    #     for i in range(ind1 + 1, ind2):
+    #         token = doc[i]
+    #         if token.pos_ == 'VERB':
+    #             relations.append(token)
+    #             found_verb = True
+    #         elif token.pos_ == 'ADP':
+    #             relations.append(token)
+    #         elif token.pos_ == 'PUNCT':
+    #             found_punct = True
+    #             break
+    #     if not found_punct and found_verb:
+    #         triplet.append((noun1, relations, noun2))
+    # return triplet
+
+
 def extractor_by_pos(document):
     doc = nlp_model(document)
     sents = list(doc.sents)
@@ -167,13 +196,14 @@ def evaluation():
         random.shuffle(pos_list)
         # print(pos_list[:30])
         print(len(pos_list))
+        # print(pos_list)
 
     # evaluation for tree
-    for page in pages:
-        tree_list = extractor_by_dependency_tree(document=page)
-        random.shuffle(tree_list)
-        print(len(tree_list))
-        # print(tree_list[:30])
+    # for page in pages:
+    #     tree_list = extractor_by_dependency_tree(document=page)
+    #     random.shuffle(tree_list)
+    #     print(len(tree_list))
+    #     # print(tree_list[:30])
 
 
 def main():
