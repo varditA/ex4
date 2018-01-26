@@ -104,8 +104,6 @@ def extractor_by_pos(document):
 # ----------------------------- Part B ---------------------------------------
 
 def proper_nouns_for_sent_by_tree(doc):
-
-    print(doc)
     proper_nouns = []
     tokens = list(doc)
     for token in tokens:
@@ -114,8 +112,6 @@ def proper_nouns_for_sent_by_tree(doc):
             for child in token.children:
                 if child.dep_ == 'compound':
                     token_list.append(child)
-            sorted(token_list, key=lambda token_in: token_in.i)
-            print(token_list)
             proper_nouns.append(token_list)
 
     return proper_nouns
@@ -137,7 +133,14 @@ def condition2(noun1, noun2):
     if head1.head != head2.head.head:
         return None
     if head1.dep_ == 'nsubj' and head2.dep_ == 'pobj' and head2.head.dep_ == 'prep':
-        return noun1, head2.head.text + " " + head2.head.head.text, noun2
+        if head2.head.i < head2.head.head.i:
+            print("in1")
+            print(head2.head.i, head2.head.head.i)
+            return noun1, head2.head.text + " " + head2.head.head.text, noun2
+        else:
+            print("in2")
+            print(head2.head.i, head2.head.head.i)
+            return noun1, head2.head.head.text + " " + head2.head.text, noun2
     return None
 
 
@@ -158,7 +161,6 @@ def define_relations(proper_nouns):
 
 def extractor_by_dependency_tree(document):
     doc = nlp_model(document)
-    # print(doc.text)
     # sents = list(doc.sents)
     relations_list = []
 
@@ -174,27 +176,12 @@ def extractor_by_dependency_tree(document):
         return []
 
     for relation in triplet:
-        relations_list.append(relation)
+        sub = sorted(relation[0], key=lambda token_in: token_in.i)
+        # rel = sorted(relation[1], key=lambda token_in: token_in.i)
+        obj = sorted(relation[2], key=lambda token_in: token_in.i)
+        relations_list.append([sub, relation[1], obj])
 
     return relations_list
-
-    # for i, sent in enumerate(sents):
-    #     proper_nouns = proper_nouns_for_sent_by_tree(sent)
-    #
-    #     # Need at least 2 proper nouns to create pairs
-    #     if len(proper_nouns) <= 1:
-    #         continue
-    #
-    #     triplet = define_relations(proper_nouns)
-    #     # print(triplet)
-    #     # Need at least 1 pair to create relations
-    #     if len(triplet) < 1:
-    #         continue
-    #
-    #     for relation in triplet:
-    #         relations_list.append(relation)
-    #
-    # return relations_list
 
 
 # ----------------------------- Part C ---------------------------------------
@@ -208,13 +195,12 @@ def evaluation():
     # pages = [page_trump, page_pitt, page_jolie]
     pages = [page_trump]
 
-
     # evaluation for pos
-    for page in pages:
-        pos_list = extractor_by_pos(document=page)
-        print(len(pos_list))
-        random.shuffle(pos_list)
-        # print(pos_list[:30])
+    # for page in pages:
+    #     pos_list = extractor_by_pos(document=page)
+    #     print(len(pos_list))
+    #     random.shuffle(pos_list)
+    # print(pos_list[:30])
 
     # evaluation for tree
     for page in pages:
@@ -228,10 +214,6 @@ def evaluation():
 
 def main():
     evaluation()
-
-    # dict_by_tree = extractor_by_dependency_tree(document=page)
-    # print(dict_by_tree)
-    # evaluation()
 
 
 if __name__ == '__main__':
