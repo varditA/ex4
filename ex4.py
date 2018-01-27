@@ -135,11 +135,13 @@ def condition2(noun1, noun2):
     if head1.dep_ == 'nsubj' and head2.dep_ == 'pobj' and head2.head.dep_ == 'prep':
         if head2.head.i < head2.head.head.i:
             print("in1")
-            print(head2.head.i, head2.head.head.i)
-            return noun1, head2.head.text + " " + head2.head.head.text, noun2
+            # print(head2.head.i, head2.head.head.i)
+            print(head2.head, head2.head.head)
+            return noun1, head2.head.head.text + " " + head2.head.text, noun2
         else:
             print("in2")
-            print(head2.head.i, head2.head.head.i)
+            # print(head2.head.i, head2.head.head.i)
+            print(head2.head, head2.head.head)
             return noun1, head2.head.head.text + " " + head2.head.text, noun2
     return None
 
