@@ -21,60 +21,60 @@ def proper_nouns_for_sent_by_pos(doc):
     return proper_nouns
 
 
-def pairs_for_sents(proper_nouns, doc):
-    triplet = []
-    for noun1 in proper_nouns:
-        for noun2 in proper_nouns:
-            ind1 = noun1[-1].i
-            ind2 = noun2[0].i
-
-            found_verb = False
-            found_punct = False
-
-            relations = list()
-
-            for i in range(ind1 + 1, ind2):
-                token = doc[i]
-                if token.pos_ == 'VERB':
-                    relations.append(token)
-                    found_verb = True
-                elif token.pos_ == 'ADP':
-                    relations.append(token)
-                elif token.pos_ == 'PUNCT':
-                    found_punct = True
-                    break
-            if not found_punct and found_verb:
-                triplet.append((noun1, relations, noun2))
-    return triplet
-
-
 # def pairs_for_sents(proper_nouns, doc):
 #     triplet = []
-#     for i in range(len(proper_nouns) - 1):
-#         noun1 = proper_nouns[i]
-#         noun2 = proper_nouns[i+1]
+#     for noun1 in proper_nouns:
+#         for noun2 in proper_nouns:
+#             ind1 = noun1[-1].i
+#             ind2 = noun2[0].i
 #
-#         ind1 = noun1[-1].i
-#         ind2 = noun2[0].i
+#             found_verb = False
+#             found_punct = False
 #
-#         found_verb = False
-#         found_punct = False
+#             relations = list()
 #
-#         relations = list()
-#
-#         for i in range(ind1 + 1, ind2):
-#             token = doc[i]
-#             if token.pos_ == 'VERB':
-#                 relations.append(token)
-#                 found_verb = True
-#             elif token.pos_ == 'ADP':
-#                 relations.append(token)
-#             elif token.pos_ == 'PUNCT':
-#                 found_punct = True
-#                 break
-#         if not found_punct and found_verb:
-#             triplet.append((noun1, relations, noun2))
+#             for i in range(ind1 + 1, ind2):
+#                 token = doc[i]
+#                 if token.pos_ == 'VERB':
+#                     relations.append(token)
+#                     found_verb = True
+#                 elif token.pos_ == 'ADP':
+#                     relations.append(token)
+#                 elif token.pos_ == 'PUNCT':
+#                     found_punct = True
+#                     break
+#             if not found_punct and found_verb:
+#                 triplet.append((noun1, relations, noun2))
 #     return triplet
+
+
+def pairs_for_sents(proper_nouns, doc):
+    triplet = []
+    for i in range(len(proper_nouns) - 1):
+        noun1 = proper_nouns[i]
+        noun2 = proper_nouns[i+1]
+
+        ind1 = noun1[-1].i
+        ind2 = noun2[0].i
+
+        found_verb = False
+        found_punct = False
+
+        relations = list()
+
+        for i in range(ind1 + 1, ind2):
+            token = doc[i]
+            if token.pos_ == 'VERB':
+                relations.append(token)
+                found_verb = True
+            elif token.pos_ == 'ADP':
+                relations.append(token)
+            elif token.pos_ == 'PUNCT':
+                found_punct = True
+                break
+        if not found_punct and found_verb:
+            triplet.append((noun1, relations, noun2))
+    return triplet
 
 
 def extractor_by_pos(document):
@@ -133,16 +133,17 @@ def condition2(noun1, noun2):
     if head1.head != head2.head.head:
         return None
     if head1.dep_ == 'nsubj' and head2.dep_ == 'pobj' and head2.head.dep_ == 'prep':
-        if head2.head.i < head2.head.head.i:
-            print("in1")
+        # if head2.head.i < head2.head.head.i:
+            # print("in1")
             # print(head2.head.i, head2.head.head.i)
-            print(head2.head, head2.head.head)
-            return noun1, head2.head.head.text + " " + head2.head.text, noun2
-        else:
-            print("in2")
+            # print(head2.head, head2.head.head)
+            # return noun1, head2.head.head.text + " " + head2.head.text, noun2
+        # else:
+            # print("in2")
             # print(head2.head.i, head2.head.head.i)
-            print(head2.head, head2.head.head)
-            return noun1, head2.head.head.text + " " + head2.head.text, noun2
+            # print(head2.head, head2.head.head)
+            # return noun1, head2.head.head.text + " " + head2.head.text, noun2
+        return noun1, head2.head.head.text + " " + head2.head.text, noun2
     return None
 
 
@@ -194,24 +195,30 @@ def evaluation():
     page_trump = wikipedia.page('Donald Trump').content
     page_jolie = wikipedia.page('Angelina Jolie').content
 
-    # pages = [page_trump, page_pitt, page_jolie]
-    pages = [page_trump]
+    pages = [page_trump, page_pitt, page_jolie]
+    # pages = [page_trump]
 
     # evaluation for pos
-    # for page in pages:
-    #     pos_list = extractor_by_pos(document=page)
-    #     print(len(pos_list))
-    #     random.shuffle(pos_list)
-    # print(pos_list[:30])
+    print("a) Pos extractor")
+    for page in pages:
+        pos_list = extractor_by_pos(document=page)
+
+        # Chose 10 random triplets
+        random.shuffle(pos_list)
+        for sentence in pos_list[:10]:
+            print(sentence)
+        # print(pos_list[:10])
 
     # evaluation for tree
+    print("b) extractor of dependency tree")
     for page in pages:
         tree_list = extractor_by_dependency_tree(document=page)
-        print(len(tree_list))
-        for sentence in tree_list:
-            print(sentence)
+
+        # Chose 10 random triplets
         random.shuffle(tree_list)
-    #     # print(tree_list[:30])
+        for sentence in tree_list[:10]:
+            print(sentence)
+        # print(tree_list[:10])
 
 
 def main():
