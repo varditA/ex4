@@ -52,7 +52,7 @@ def pairs_for_sents(proper_nouns, doc):
     triplet = []
     for i in range(len(proper_nouns) - 1):
         noun1 = proper_nouns[i]
-        noun2 = proper_nouns[i+1]
+        noun2 = proper_nouns[i + 1]
 
         ind1 = noun1[-1].i
         ind2 = noun2[0].i
@@ -134,15 +134,15 @@ def condition2(noun1, noun2):
         return None
     if head1.dep_ == 'nsubj' and head2.dep_ == 'pobj' and head2.head.dep_ == 'prep':
         # if head2.head.i < head2.head.head.i:
-            # print("in1")
-            # print(head2.head.i, head2.head.head.i)
-            # print(head2.head, head2.head.head)
-            # return noun1, head2.head.head.text + " " + head2.head.text, noun2
+        # print("in1")
+        # print(head2.head.i, head2.head.head.i)
+        # print(head2.head, head2.head.head)
+        # return noun1, head2.head.head.text + " " + head2.head.text, noun2
         # else:
-            # print("in2")
-            # print(head2.head.i, head2.head.head.i)
-            # print(head2.head, head2.head.head)
-            # return noun1, head2.head.head.text + " " + head2.head.text, noun2
+        # print("in2")
+        # print(head2.head.i, head2.head.head.i)
+        # print(head2.head, head2.head.head)
+        # return noun1, head2.head.head.text + " " + head2.head.text, noun2
         return noun1, head2.head.head.text + " " + head2.head.text, noun2
     return None
 
@@ -195,14 +195,15 @@ def evaluation():
     page_trump = wikipedia.page('Donald Trump').content
     page_jolie = wikipedia.page('Angelina Jolie').content
 
-    pages = [page_trump, page_pitt, page_jolie]
+    pages = [{'page': page_trump, 'name': 'Donald Trump'}, {'page': page_pitt, 'name': 'Brad Pitt'},
+             {'page': page_jolie, 'name': 'Angelina Jolie'}]
     # pages = [page_trump]
 
     # evaluation for pos
     print("a) Pos extractor")
     for page in pages:
-        pos_list = extractor_by_pos(document=page)
-
+        pos_list = extractor_by_pos(document=page['page'])
+        print('Page:', page['name'])
         # Chose 10 random triplets
         random.shuffle(pos_list)
         for sentence in pos_list[:10]:
@@ -212,8 +213,8 @@ def evaluation():
     # evaluation for tree
     print("b) extractor of dependency tree")
     for page in pages:
-        tree_list = extractor_by_dependency_tree(document=page)
-
+        tree_list = extractor_by_dependency_tree(document=page['page'])
+        print('Page:', page['name'])
         # Chose 10 random triplets
         random.shuffle(tree_list)
         for sentence in tree_list[:10]:
